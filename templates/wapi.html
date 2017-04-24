@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h2>What are the chances of buying a tent?</h2>
+
+<br>
+This web page will determine the likelihood that a tent purchase will occur.
+<p>
+    The model was created using the pipeline model feature (currently in Beta) of Data Science Experience.
+</p>
+<p>
+    The following link describes how that was accomplished using logistic regression.
+</p>
+<a target="_blank"
+   href="https://datascix-dev.stage1.ng.bluemix.net/docs/content/analyze-data/ml-example-log-regress.html">https://datascix-dev.stage1.ng.bluemix.net/docs/content/analyze-data/ml-example-log-regress.html</a>
+<p>
+    This model was deployed to the IBM Watson Machine Learning Bluemix service (currently in Beta).
+</p>
+<p>
+    REST calls are made to the IBM Watson Machine Learning service to retrieve a token and subsequently using that token
+    to score using the model based on the following responses.
+</p>
+<br>
+<br>
+
+
+<form action="{{ url_for('add_result') }}" method="post" class="add-entry">
+    <dl>
+        <dt>Your Name:
+        <dd><input type="text" size="30" name="name">
+        <dt>Gender:
+        <dd><input type="radio" name="gender" value="M" checked> Male
+            <input type="radio" name="gender" value="F"> Female
+        <dt>Your Marital Status:
+        <dd>
+            <select name="married">
+                <option value="Married">Married</option>
+                <option value="Single">Single</option>
+                <option value="Unspecified">Unspecified</option>
+            </select>
+        <dt>Your Age:
+        <dd>
+            <select name="age">
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="35">35</option>
+                <option value="40">40</option>
+                <option value="45">45</option>
+                <option value="50">50</option>
+                <option value="55">55</option>
+                <option value="60">60</option>
+                <option value="65">65</option>
+            </select>
+        <dt>Your Job:
+        <dd>
+            <select name="job">
+                <option value="Executive">Executive</option>
+                <option value="Hospitality">Hospitality</option>
+                <option value="Other">Other</option>
+                <option value="Professional">Professional</option>
+                <option value="Retail">Retail</option>
+                <option value="Retired">Retired</option>
+                <option value="Sales">Sales</option>
+                <option value="Student">Student</option>
+                <option value="Trades">Trades</option>
+            </select>
+        <dd><input type="submit" value="Submit">
+    </dl>
+</form>
+
+
+<ul class="results">
+  {% for r in results%}
+    <li><h2>{{ r.name }}</h2>{{ r.gender|safe }}, {{ r.marital|safe }}, {{ r.age|safe }}, {{ r.job|safe }}</li>
+  {% else %}
+    <li><em>No Results</em></li>
+  {% endfor %}
+
+</ul>
+
+{% endblock %}
