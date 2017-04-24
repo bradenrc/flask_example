@@ -69,10 +69,11 @@ This web page will determine the likelihood that a tent purchase will occur.
     </dl>
 </form>
 
+<h3>Other Predictions:</h3>
 
 <ul class="results">
   {% for r in results%}
-    <li><h2>{{ r.name }}</h2>{{ r.gender|safe }}, {{ r.marital|safe }}, {{ r.age|safe }}, {{ r.job|safe }}</li>
+    <li><h2>{{ r.name }}</h2>{{ r.gender|safe }}, {{ r.marital|safe }}, {{ r.age|safe }}, {{ r.job|safe }}, {{ r.plabel|safe }}, {{ r.ppred|safe }}</li>
   {% else %}
     <li><em>No Results</em></li>
   {% endfor %}

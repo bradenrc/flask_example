@@ -13,5 +13,7 @@ create table wapi (
   gender text not null,
   marital text not null,
   age text not null,
-  job text not null
+  job text not null,
+  plabel text not null,
+  ppred text not null
 );

@@ -3,7 +3,7 @@ import os
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
-
+import urllib3, requests, json, os
 
 
 app = Flask(__name__)
@@ -17,6 +17,40 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+
+
+
+"""
+    All of the watson API pieces are in the function below
+"""
+def predict_purchase(gender, age, marital, job):
+    id = "09171b0e-d473-4f0e-9d11-73bcd330ca67"
+    version = "https://ibm-watson-ml.mybluemix.net/v2/artifacts/models/09171b0e-d473-4f0e-9d11-73bcd330ca67/versions/7e684513-a525-4510-90d5-a87ba6d22ab7"
+
+    service_path = 'https://ibm-watson-ml.mybluemix.net'
+    username = "35f91983-2730-4f14-8f4c-b821bf7c4c5a"
+    password = "babcc6ca-c50e-414a-8cc3-535afb5f1fb8"
+
+    headers = urllib3.util.make_headers(basic_auth='{}:{}'.format(username, password))
+    url = '{}/v2/identity/token'.format(service_path)
+    response = requests.get(url, headers=headers)
+    mltoken = json.loads(response.text).get('token')
+
+    header_online = {'Content-Type': 'application/json', 'Authorization': mltoken}
+    scoring_href = "https://ibm-watson-ml.mybluemix.net/32768/v2/scoring/2080"
+
+    # gender = "M"
+    # age = 55
+    # marital = "Single"
+    # job = "Executive"
+
+    age = int(age)
+    payload_scoring = {"record":[gender, age, marital, job]}
+
+    response_scoring = requests.put(scoring_href, json=payload_scoring, headers=header_online)
+    result = response_scoring.text
+    return result
+
 
 
 def connect_db():
@@ -33,13 +67,6 @@ def init_db():
         db.cursor().executescript(f.read())
     db.commit()
 
-#
-# @app.cli.command('initdb')
-# def initdb_command():
-#     """Creates the database tables."""
-#     init_db()
-#     print('Initialized the database.')
-#
 
 def get_db():
     """Opens a new database connection if there is none yet for the
@@ -60,19 +87,25 @@ def close_db(error):
 @app.route('/wapi')
 def show_wapi():
     db = get_db()
-    cur = db.execute('select name, gender, marital, age, job from wapi order by id desc')
+    cur = db.execute('select name, gender, marital, age, job, plabel, ppred from wapi order by id desc')
     results = cur.fetchall()
     return render_template('wapi.html', results=results)
 
 @app.route('/wapi_add', methods=['POST'])
 def add_result():
+    name = request.form['name']
+    gender = request.form['gender']
+    married = request.form['married']
+    age = request.form['age']
+    job = request.form['job']
+    result = json.loads(predict_purchase(gender, age, married, job))
+
+    plabel = result['result']['predictedLabel']
+    ppred = result['result']['prediction']
+
     db = get_db()
-    db.execute('insert into wapi (name, gender, marital, age, job) values (?, ?, ?, ?, ?)',
-               [request.form['name'],
-               request.form['gender'],
-                request.form['married'],
-                request.form['age'],
-                request.form['job']])
+    db.execute('insert into wapi (name, gender, marital, age, job, plabel, ppred) values (?, ?, ?, ?, ?, ?, ?)',
+               [name, gender, married, age, job, plabel, ppred])
     db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_wapi'))
@@ -119,5 +152,6 @@ def logout():
     return redirect(url_for('show_entries'))
 
 
+port = os.getenv('PORT', '5000')
 if __name__ == "__main__":
-    app.run()
+	app.run(host='0.0.0.0', port=int(port))
