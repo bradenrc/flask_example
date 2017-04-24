@@ -33,13 +33,13 @@ def init_db():
         db.cursor().executescript(f.read())
     db.commit()
 
-
-@app.cli.command('initdb')
-def initdb_command():
-    """Creates the database tables."""
-    init_db()
-    print('Initialized the database.')
-
+#
+# @app.cli.command('initdb')
+# def initdb_command():
+#     """Creates the database tables."""
+#     init_db()
+#     print('Initialized the database.')
+#
 
 def get_db():
     """Opens a new database connection if there is none yet for the
