@@ -71,6 +71,25 @@ This web page will determine the likelihood that a tent purchase will occur.
 
 <h3>Other Predictions:</h3>
 
+<script type="text/javascript">
+
+var table1 = {
+   summarized: false,
+   names: ['Amnt', 'Type'],
+   options: ['numeric', 'string'],
+   rows: {{ sumres|safe }}
+};
+
+
+//For the Size of the Chart
+var tt = '{{ tcount|safe }}';
+
+</script>
+
+
+<svg id="visualization" width="375" height="375"></svg>
+<script src="{{ url_for('static', filename='piechart.js') }}"></script>
+
 <ul class="results">
   {% for r in results%}
     <li><h2>{{ r.name }}</h2>{{ r.gender|safe }}, {{ r.marital|safe }}, {{ r.age|safe }}, {{ r.job|safe }}, {{ r.plabel|safe }}, {{ r.ppred|safe }}</li>
@@ -79,5 +98,4 @@ This web page will determine the likelihood that a tent purchase will occur.
   {% endfor %}
 
 </ul>
-
 {% endblock %}

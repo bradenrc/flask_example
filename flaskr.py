@@ -89,7 +89,18 @@ def show_wapi():
     db = get_db()
     cur = db.execute('select name, gender, marital, age, job, plabel, ppred from wapi order by id desc')
     results = cur.fetchall()
-    return render_template('wapi.html', results=results)
+
+    sumres_list = []
+    cur = db.execute('select plabel, count(*) as pcount from wapi group by plabel')
+
+    for s in cur.fetchall():
+         sumres_list.append([s['pcount'], s['plabel'].encode("utf-8")])
+
+    cur = db.execute('select count(*) as count from wapi')
+    tcount_rows = cur.fetchall()
+    tcount = tcount_rows[0]['count']
+
+    return render_template('wapi.html', results=results, sumres=sumres_list, tcount=tcount)
 
 @app.route('/wapi_add', methods=['POST'])
 def add_result():
@@ -150,6 +161,11 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_entries'))
+
+
+@app.route('/test')
+def test():
+    return render_template("test.html")
 
 
 port = os.getenv('PORT', '5000')

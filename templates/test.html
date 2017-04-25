@@ -1,30 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta http-Equiv="Cache-Control" Content="no-cache">
 	<meta http-Equiv="Pragma" Content="no-cache">
 	<meta http-Equiv="Expires" Content="0">
-	<title>IBM</title>
+	<title>Brunel Output</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.1/d3.min.js" charset="utf-8"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.20/topojson.min.js" charset="utf-8"></script>
 	<script src="https://brunelvis.org/js/brunel.2.3.min.js" charset="utf-8"></script>
 	<link rel="stylesheet" type="text/css" href="https://brunelvis.org/js/brunel.2.3.css" charset="utf-8"/>
 </head>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-<div class="page">
-
-  <div class="metanav">
-  {% if not session.logged_in %}
-    <a href="{{ url_for('login') }}">log in</a>
-  {% else %}
-    <a href="{{ url_for('logout') }}">log out</a>
-  {% endif %}
-  </div>
-
-  <center><image src="{{ url_for('static', filename='watson.jpg') }}" /></center>
-
-  {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-  {% block body %}{% endblock %}
-</div>
+<body style="margin:0">
+<h2>Predicted Interest</h2>
+<p></p>
+<svg id="visualization" width="423" height="311"></svg>
+<small>data('sample:US States.csv') stack polar bar x(&#34;const&#34;) y(#count) color(region) legends(none) label(region)</small>
+</body>
+<script src="{{ url_for('static', filename='piechart.js') }}"></script>
